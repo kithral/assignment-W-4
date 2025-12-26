@@ -1,0 +1,8 @@
+{
+  // Use a separate target dir for RA to avoid locking files during builds
+  "rust-analyzer.check.overrideCommand": [
+    "cargo", "check", "--workspace", "--message-format=json", "--all-targets"
+  ],
+  // Linker magic for Linux (see next section)
+  "rust-analyzer.cargo.buildScripts.enable": true
+}

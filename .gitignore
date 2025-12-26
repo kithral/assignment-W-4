@@ -1,0 +1,51 @@
+# ------------------------------------------------------------------------------
+# Rust & Cargo
+# ------------------------------------------------------------------------------
+# The build directory (can get massive, 10GB+, never commit this)
+/target/
+
+# Cargo.lock is usually committed for applications (Server/Client) to ensure 
+# reproducible builds. If you were making a generic library, you might ignore it.
+# We will keep it tracked.
+# /Cargo.lock 
+
+# ------------------------------------------------------------------------------
+# IDE & Editors (VS Code / Code - OSS)
+# ------------------------------------------------------------------------------
+# Ignore all VS Code files by default...
+.vscode/*
+# ...but explicitly track the config files we just created so your env is consistent.
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+# ------------------------------------------------------------------------------
+# Vim / NeoVim (Since you mentioned moving to it later)
+# ------------------------------------------------------------------------------
+*.swp
+*.swo
+*.swn
+Session.vim
+
+# ------------------------------------------------------------------------------
+# OS Generated Files
+# ------------------------------------------------------------------------------
+.DS_Store
+.DS_Store?
+._*
+.Trashes
+ehthumbs.db
+Thumbs.db
+*~
+
+# ------------------------------------------------------------------------------
+# Game Assets (Common nuisances)
+# ------------------------------------------------------------------------------
+# Blender backup files (if you start making 3D models)
+*.blend1
+*.blend2
+
+# Krita/GIMP backup files (if you make textures)
+*.kra~
+*.xcf~

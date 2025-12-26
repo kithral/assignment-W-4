@@ -1,0 +1,7 @@
+{
+  "recommendations": [
+    "rust-lang.rust-analyzer",
+    "vadimcn.vscode-lldb",    // Essential for debugging Rust
+    "tamasfe.even-better-toml"
+  ]
+}
