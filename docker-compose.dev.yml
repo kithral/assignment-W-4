@@ -1,0 +1,181 @@
+# Docker Compose for local development
+# Run all microservices and infrastructure locally
+#
+# Usage:
+#   docker-compose -f docker-compose.dev.yml up
+#   docker-compose -f docker-compose.dev.yml up world-state redis  # Only specific services
+
+version: '3.8'
+
+services:
+  # Infrastructure Services
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    command: redis-server --appendonly yes
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: worldengine
+      POSTGRES_USER: dev
+      POSTGRES_PASSWORD: devpassword
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U dev"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    ports:
+      - "5672:5672"   # AMQP
+      - "15672:15672" # Management UI
+    environment:
+      RABBITMQ_DEFAULT_USER: dev
+      RABBITMQ_DEFAULT_PASS: devpassword
+    volumes:
+      - rabbitmq-data:/var/lib/rabbitmq
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Microservices
+  world-state:
+    build:
+      context: .
+      dockerfile: services/world-state/Dockerfile
+    ports:
+      - "8080:8080"  # Health check
+      - "50051:50051" # gRPC (if/when implemented)
+    environment:
+      RUST_LOG: world_state=debug,info
+      REDIS_URL: redis://redis:6379
+      DATABASE_URL: postgres://dev:devpassword@postgres:5432/worldengine
+    depends_on:
+      redis:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
+
+  script-executor:
+    build:
+      context: .
+      dockerfile: services/script-executor/Dockerfile
+    ports:
+      - "8081:8081"  # Health check
+    environment:
+      RUST_LOG: script_executor=debug,info
+      RABBITMQ_URL: amqp://dev:devpassword@rabbitmq:5672
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+
+  # Uncomment these as you implement them
+
+  # graphics-gateway:
+  #   build:
+  #     context: .
+  #     dockerfile: services/graphics-gateway/Dockerfile
+  #   ports:
+  #     - "5000:5000/udp"  # Game client connections
+  #     - "8082:8082"      # Health check
+  #   environment:
+  #     RUST_LOG: graphics_gateway=debug,info
+  #     WORLD_STATE_URL: http://world-state:50051
+  #   depends_on:
+  #     - world-state
+
+  # text-gateway:
+  #   build:
+  #     context: .
+  #     dockerfile: services/text-gateway/Dockerfile
+  #   ports:
+  #     - "4201:4201"  # Telnet connections
+  #     - "8083:8083"  # Health check
+  #   environment:
+  #     RUST_LOG: text_gateway=debug,info
+  #     WORLD_STATE_URL: http://world-state:50051
+  #   depends_on:
+  #     - world-state
+
+  # auth-service:
+  #   build:
+  #     context: .
+  #     dockerfile: services/auth-service/Dockerfile
+  #   ports:
+  #     - "8084:8084"
+  #   environment:
+  #     RUST_LOG: auth_service=debug,info
+  #     DATABASE_URL: postgres://dev:devpassword@postgres:5432/worldengine
+  #     REDIS_URL: redis://redis:6379
+  #   depends_on:
+  #     - postgres
+  #     - redis
+
+  # physics-service:
+  #   build:
+  #     context: .
+  #     dockerfile: services/physics-service/Dockerfile
+  #   ports:
+  #     - "8085:8085"
+  #   environment:
+  #     RUST_LOG: physics_service=debug,info
+  #   depends_on:
+  #     - world-state
+
+  # chat-service:
+  #   build:
+  #     context: .
+  #     dockerfile: services/chat-service/Dockerfile
+  #   ports:
+  #     - "8086:8086"
+  #   environment:
+  #     RUST_LOG: chat_service=debug,info
+  #     REDIS_URL: redis://redis:6379
+  #   depends_on:
+  #     - redis
+
+  # persistence-service:
+  #   build:
+  #     context: .
+  #     dockerfile: services/persistence-service/Dockerfile
+  #   ports:
+  #     - "8087:8087"
+  #   environment:
+  #     RUST_LOG: persistence_service=debug,info
+  #     DATABASE_URL: postgres://dev:devpassword@postgres:5432/worldengine
+  #   depends_on:
+  #     - postgres
+
+  # asset-service:
+  #   build:
+  #     context: .
+  #     dockerfile: services/asset-service/Dockerfile
+  #   ports:
+  #     - "8088:8088"
+  #     - "8089:8089"  # HTTP asset serving
+  #   environment:
+  #     RUST_LOG: asset_service=debug,info
+  #   volumes:
+  #     - asset-data:/data/assets
+
+volumes:
+  redis-data:
+  postgres-data:
+  rabbitmq-data:
+  asset-data:

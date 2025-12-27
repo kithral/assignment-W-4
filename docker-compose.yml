@@ -1,0 +1,36 @@
+version: '3.8'
+
+services:
+  server:
+    build:
+      context: .
+      dockerfile: server/Dockerfile
+    container_name: assignment-w4-server
+    restart: unless-stopped
+    ports:
+      - "5000:5000/udp"
+    environment:
+      - RUST_LOG=info
+      # Add more environment variables as needed:
+      # - SERVER_PORT=5000
+      # - MAX_PLAYERS=100
+    # Uncomment for volume mounts if you need persistent data
+    # volumes:
+    #   - ./data:/app/data
+    networks:
+      - game-network
+
+  # Optional: Add a monitoring service for learning
+  # prometheus:
+  #   image: prom/prometheus:latest
+  #   container_name: prometheus
+  #   ports:
+  #     - "9090:9090"
+  #   volumes:
+  #     - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
+  #   networks:
+  #     - game-network
+
+networks:
+  game-network:
+    driver: bridge

@@ -3,11 +3,12 @@
 # ------------------------------------------------------------------------------
 # The build directory (can get massive, 10GB+, never commit this)
 /target/
+.env
 
-# Cargo.lock is usually committed for applications (Server/Client) to ensure 
+# Cargo.lock is usually committed for applications (Server/Client) to ensure
 # reproducible builds. If you were making a generic library, you might ignore it.
 # We will keep it tracked.
-# /Cargo.lock 
+# /Cargo.lock
 
 # ------------------------------------------------------------------------------
 # IDE & Editors (VS Code / Code - OSS)
@@ -19,6 +20,14 @@
 !.vscode/tasks.json
 !.vscode/launch.json
 !.vscode/extensions.json
+
+*.code-workspace
+
+# ------------------------------------------------------------------------------
+# Claude Code Settings
+# ------------------------------------------------------------------------------
+# Track Claude configuration for consistent AI assistance
+# .claude/
 
 # ------------------------------------------------------------------------------
 # Vim / NeoVim (Since you mentioned moving to it later)

@@ -1,7 +1,18 @@
 {
   "recommendations": [
+    // Essential Rust development
     "rust-lang.rust-analyzer",
-    "vadimcn.vscode-lldb",    // Essential for debugging Rust
-    "tamasfe.even-better-toml"
-  ]
+
+    // Additional helpful extensions
+    "vadimcn.vscode-lldb",           // Debugger for Rust
+    "tamasfe.even-better-toml",      // Better TOML support
+    "serayuzgur.crates",             // Manage Cargo.toml dependencies
+    "usernamehw.errorlens",          // Inline error messages
+    "eamodio.gitlens",               // Git integration
+
+    // Optional but useful
+    "fill-labs.dependi",             // Dependency management UI
+    "github.vscode-github-actions"   // GitHub Actions support
+  ],
+  "unwantedRecommendations": []
 }

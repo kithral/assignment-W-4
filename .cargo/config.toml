@@ -1,3 +1,43 @@
+# Cargo Build Configuration
+# Optimizes build times and sets up cross-compilation targets
+
+# Fast linking on Linux using mold (requires mold to be installed)
 [target.x86_64-unknown-linux-gnu]
 linker = "clang"
 rustflags = ["-C", "link-arg=-fuse-ld=mold"]
+
+# ARM64 cross-compilation setup (for Orange Pi deployment)
+# Uncomment when ready to cross-compile:
+# [target.aarch64-unknown-linux-gnu]
+# linker = "aarch64-linux-gnu-gcc"
+
+# Build settings
+[build]
+# Use all CPU cores for compilation
+jobs = 8  # Adjust based on your CPU
+
+# Terminal output settings
+[term]
+verbose = false
+color = "auto"
+
+# Network settings for dependency downloads
+[net]
+git-fetch-with-cli = false  # Use libgit2 for faster fetches
+
+# Registry settings
+[registry]
+default = "crates-io"
+
+# Alias for common commands (use with `cargo <alias>`)
+[alias]
+# Quick check without building
+c = "check"
+# Build and run with release optimizations
+rr = "run --release"
+# Run clippy with strict settings
+strict = "clippy -- -D warnings"
+# Show dependency tree
+tree = "tree"
+# Check if dependencies are outdated (requires cargo-outdated)
+outdated = "outdated"

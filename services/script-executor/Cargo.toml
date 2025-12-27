@@ -1,0 +1,44 @@
+[package]
+name = "script-executor"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+shared = { path = "../../shared" }
+
+# Async runtime
+tokio = { version = "1", features = ["full"] }
+
+# gRPC
+tonic = "0.12"
+prost = "0.13"
+
+# HTTP server for health checks
+axum = "0.7"
+
+# Scripting languages
+rhai = { version = "1.19", features = ["sync"] }
+# Lua support (placeholder - uncomment when needed)
+# mlua = { version = "0.9", features = ["lua54", "vendored", "async", "serialize"] }
+
+# Message queue
+# lapin = "2.3"  # RabbitMQ client (add when implementing job queue)
+
+# Tracing and logging
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+
+# Serialization
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+
+# Environment variables
+dotenvy = "0.15"
+
+[build-dependencies]
+tonic-build = "0.12"
+
+[features]
+default = ["rhai-scripting"]
+rhai-scripting = []
+lua-scripting = []  # Enable when switching to Lua: mlua dependency

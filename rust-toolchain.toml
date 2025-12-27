@@ -1,0 +1,7 @@
+# Rust Toolchain Configuration
+# Locks the Rust version for reproducible builds across dev and CI/CD
+
+[toolchain]
+channel = "stable"
+components = ["rustfmt", "clippy", "rust-src"]
+profile = "default"

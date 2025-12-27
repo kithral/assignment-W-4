@@ -1,0 +1,16 @@
+# Clippy Configuration
+# Educational lints to help learn Rust best practices
+
+# Lint levels - be strict to learn proper patterns
+warn-on-all-wildcard-imports = true
+disallowed-names = ["foo", "bar", "baz", "quux"]
+
+# Cognitive complexity threshold (learn to break down complex functions)
+cognitive-complexity-threshold = 15
+
+# Performance hints
+too-many-arguments-threshold = 7
+type-complexity-threshold = 250
+
+# Encourage best practices
+enum-variant-name-threshold = 3

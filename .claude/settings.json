@@ -1,0 +1,260 @@
+{
+  "projectInfo": {
+    "name": "Assignment W-4 - Rust Multiplayer Simulation",
+    "description": "Educational Rust project for learning systems programming through a multiplayer space simulation with Bevy ECS and Lightyear networking",
+    "type": "learning-project",
+    "primaryLanguage": "rust",
+    "frameworks": ["bevy", "lightyear"],
+    "targetPlatform": "linux-arm64"
+  },
+  "codeStyle": {
+    "language": "rust",
+    "edition": "2021",
+    "preferences": {
+      "followRustApiGuidelines": true,
+      "preferIdiomatic": true,
+      "enforceClippyLints": true,
+      "useRustfmt": true,
+      "avoidUnsafe": true,
+      "preferExplicitTypes": "when-clarity-needed",
+      "errorHandling": "Result-based",
+      "commentStyle": "explain-why-not-what"
+    }
+  },
+  "bestPractices": {
+    "rust": {
+      "ownership": {
+        "preferBorrowing": true,
+        "avoidUnnecessaryCloning": true,
+        "useReferencesWhenPossible": true,
+        "explainOwnershipDecisions": true
+      },
+      "errorHandling": {
+        "avoidUnwrap": true,
+        "preferQuestionMark": true,
+        "useResultAndOption": true,
+        "createCustomErrors": "when-appropriate",
+        "neverPanic": "in-library-code"
+      },
+      "performance": {
+        "avoidPrematureOptimization": true,
+        "profileBeforeOptimizing": true,
+        "preferIterators": true,
+        "useZeroCostAbstractions": true,
+        "considerCacheLocality": true
+      },
+      "concurrency": {
+        "trustTheTypeSystem": true,
+        "preferMessagePassing": true,
+        "documentThreadSafety": true,
+        "avoidManualMutexes": "when-possible"
+      },
+      "documentation": {
+        "documentPublicApi": true,
+        "includeExamples": "for-complex-functions",
+        "explainPanics": true,
+        "explainUnsafe": "always",
+        "linkToResources": true
+      }
+    },
+    "bevy": {
+      "ecs": {
+        "componentsArePureData": true,
+        "systemsAreStateless": true,
+        "useQueriesEfficiently": true,
+        "considerSystemOrdering": true,
+        "preferPlugins": "for-organization"
+      },
+      "performance": {
+        "batchOperations": true,
+        "useChangeDetection": true,
+        "avoidSystemHopping": true,
+        "profileWithBevy": true
+      }
+    },
+    "networking": {
+      "validateClientInput": "always",
+      "serverIsAuthority": true,
+      "handlePacketLoss": true,
+      "minimizeBandwidth": true,
+      "implementPrediction": "for-player-actions"
+    },
+    "general": {
+      "testDrivenDevelopment": false,
+      "writeTestsForComplexLogic": true,
+      "avoidOverEngineering": true,
+      "keepItSimple": true,
+      "refactorIncrementally": true,
+      "commitOften": true
+    }
+  },
+  "codeReview": {
+    "checkFor": [
+      "unnecessary-clones",
+      "unused-imports",
+      "dead-code",
+      "unwrap-usage",
+      "expect-usage",
+      "unsafe-blocks",
+      "todo-comments",
+      "magic-numbers",
+      "long-functions",
+      "complex-match-arms",
+      "missing-error-handling",
+      "inefficient-string-operations",
+      "unbounded-collections",
+      "blocking-operations-in-async",
+      "race-conditions",
+      "memory-leaks"
+    ],
+    "enforceClippy": true,
+    "clippyLevel": "warnings-as-errors",
+    "suggestImprovements": true,
+    "explainRustConcepts": true
+  },
+  "learningMode": {
+    "enabled": true,
+    "explainDecisions": true,
+    "compareAlternatives": true,
+    "linkToDocumentation": true,
+    "suggestLearningResources": true,
+    "explainRustIdioms": true,
+    "highlightCommonMistakes": true,
+    "encourageExperimentation": true
+  },
+  "fileHandling": {
+    "preferEditing": true,
+    "createNewFilesOnlyWhenNecessary": true,
+    "maintainExistingStructure": true,
+    "followProjectConventions": true
+  },
+  "testing": {
+    "writeUnitTests": "for-shared-logic",
+    "writeIntegrationTests": "for-client-server-interaction",
+    "useDocTests": "for-examples",
+    "testEdgeCases": true,
+    "testErrorConditions": true,
+    "avoidFlakeyTests": true
+  },
+  "security": {
+    "validateAllInputs": true,
+    "avoidSqlInjection": true,
+    "avoidCommandInjection": true,
+    "handleSecretsSafely": true,
+    "auditDependencies": "regularly",
+    "minimizeDependencies": true
+  },
+  "deployment": {
+    "targetArchitecture": "aarch64-unknown-linux-gnu",
+    "useMultiStageDockerBuilds": true,
+    "minimizeImageSize": true,
+    "useDistrolessWhenPossible": true,
+    "documentDeploymentProcess": true
+  },
+  "tools": {
+    "buildRunner": "cargo",
+    "taskRunner": "just",
+    "formatter": "rustfmt",
+    "linter": "clippy",
+    "containerization": "docker",
+    "orchestration": "k3s",
+    "cicd": "github-actions"
+  },
+  "workflowRules": {
+    "beforeCommit": [
+      "run-cargo-fmt",
+      "run-cargo-clippy",
+      "run-cargo-test",
+      "ensure-no-warnings"
+    ],
+    "beforePush": [
+      "ensure-all-tests-pass",
+      "ensure-documentation-updated",
+      "check-for-todo-comments"
+    ],
+    "codeReviewFocus": [
+      "rust-idioms",
+      "performance-implications",
+      "memory-safety",
+      "error-handling",
+      "api-design",
+      "documentation-quality"
+    ]
+  },
+  "antiPatterns": {
+    "avoid": [
+      "string-cloning-in-loops",
+      "vec-push-in-hot-path",
+      "excessive-unwrap",
+      "ignore-compiler-warnings",
+      "premature-optimization",
+      "god-objects",
+      "callback-hell",
+      "stringly-typed-code",
+      "copy-paste-code",
+      "commented-out-code",
+      "inconsistent-naming",
+      "magic-constants",
+      "long-parameter-lists",
+      "mutable-global-state"
+    ]
+  },
+  "encouragedPatterns": {
+    "use": [
+      "builder-pattern",
+      "newtype-pattern",
+      "type-state-pattern",
+      "plugin-architecture",
+      "component-composition",
+      "iterator-chains",
+      "match-expressions",
+      "option-and-result-combinators",
+      "smart-pointers",
+      "trait-objects-when-needed",
+      "const-generics",
+      "procedural-macros-sparingly"
+    ]
+  },
+  "dependencies": {
+    "auditRegularly": true,
+    "updateCarefully": true,
+    "minimizeTransitiveDeps": true,
+    "preferWellMaintained": true,
+    "checkLicenses": true,
+    "documentRationale": true
+  },
+  "documentation": {
+    "updateReadme": "for-significant-changes",
+    "updateChangelog": "for-all-changes",
+    "maintainArchitectureDocs": true,
+    "documentLearnings": true,
+    "includeCodeExamples": true,
+    "explainDesignDecisions": true
+  },
+  "customInstructions": [
+    "Always explain Rust-specific concepts when they arise",
+    "Suggest learning resources for new patterns encountered",
+    "Compare multiple approaches and explain trade-offs",
+    "Highlight when code follows or violates Rust idioms",
+    "Point out opportunities to learn new Rust features",
+    "Encourage reading compiler error messages carefully",
+    "Suggest relevant sections of The Rust Book",
+    "Explain borrow checker errors in simple terms",
+    "Recommend profiling before optimizing",
+    "Emphasize the importance of understanding over copying code"
+  ],
+  "responseStyle": {
+    "tone": "educational",
+    "verbosity": "detailed-for-learning",
+    "includeLinks": true,
+    "includeExamples": true,
+    "comparativeExamples": true,
+    "highlightKeyPoints": true
+  },
+  "progressTracking": {
+    "updateRustLearningsDoc": true,
+    "trackMilestonesInChangelog": true,
+    "documentChallenges": true,
+    "celebrateSuccesses": true
+  }
+}

@@ -1,13 +1,29 @@
 [workspace]
 resolver = "2"
-members = ["client", "server", "shared"]
+members = [
+    "client",
+    "server",  # Legacy monolith - will be deprecated
+    "shared",
+    # Microservices
+    "services/graphics-gateway",
+    "services/text-gateway",
+    "services/world-state",
+    "services/script-executor",
+    "services/auth-service",
+    "services/physics-service",
+    "services/chat-service",
+    "services/persistence-service",
+    "services/asset-service",
+]
 
 [workspace.dependencies]
 # Define versions once here
 bevy = { version = "0.15", features = ["wayland"] } # Arch needs wayland support
 lightyear = "0.18" # Check for latest version
-serde = { version = "1.0", features = ["derive"] }
-tokio = { version = "1", features = ["full"] }
+
+# Recommended by Gemini for future use - uncomment when needed:
+# serde = { version = "1.0", features = ["derive"] }  # For custom serialization beyond bincode
+# tokio = { version = "1", features = ["full"] }       # For async runtime (server-side tasks, timers, etc.)
 
 # Link your local shared crate
 shared = { path = "./shared" }

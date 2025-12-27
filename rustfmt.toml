@@ -1,0 +1,48 @@
+# Rustfmt Configuration
+# Helps maintain consistent code style - critical for learning good Rust habits
+
+# STABLE OPTIONS ONLY (works with stable Rust toolchain)
+edition = "2021"
+max_width = 100
+hard_tabs = false
+tab_spaces = 4
+newline_style = "Auto"
+use_small_heuristics = "Default"
+
+# Code organization
+reorder_imports = true
+reorder_modules = true
+remove_nested_parens = true
+
+# Function formatting
+fn_params_layout = "Tall"
+fn_call_width = 60
+
+# Whitespace
+use_field_init_shorthand = true
+force_explicit_abi = true
+
+# NOTE: Many advanced formatting options require nightly Rust.
+# If you want to use them, switch to nightly toolchain and uncomment:
+#
+# # Control flow (nightly only)
+# control_brace_style = "AlwaysSameLine"
+# brace_style = "SameLineWhere"
+#
+# # Import formatting (nightly only)
+# imports_granularity = "Crate"
+# group_imports = "StdExternalCrate"
+#
+# # Comments and documentation (nightly only)
+# wrap_comments = true
+# comment_width = 80
+# normalize_comments = true
+# normalize_doc_attributes = true
+#
+# # Matching and patterns (nightly only)
+# match_arm_blocks = true
+# match_block_trailing_comma = false
+#
+# # Trailing elements (nightly only)
+# trailing_comma = "Vertical"
+# trailing_semicolon = true

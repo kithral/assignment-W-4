@@ -1,0 +1,31 @@
+[package]
+name = "world-state"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+bevy = { workspace = true }
+shared = { path = "../../shared" }
+
+# Async runtime
+tokio = { version = "1", features = ["full"] }
+
+# gRPC for service-to-service communication
+tonic = "0.12"
+prost = "0.13"
+
+# HTTP server for health checks
+axum = "0.7"
+
+# Tracing and logging
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+
+# Serialization
+serde = { version = "1.0", features = ["derive"] }
+
+# Environment variables
+dotenvy = "0.15"
+
+[build-dependencies]
+tonic-build = "0.12"

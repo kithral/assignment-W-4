@@ -1,0 +1,41 @@
+# Exclude build artifacts and unnecessary files from Docker context
+# This speeds up Docker builds significantly
+
+# Rust build artifacts (can be GBs in size)
+target/
+**/target/
+
+# Git files
+.git/
+.gitignore
+.gitattributes
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*.swn
+.DS_Store
+
+# Documentation and non-essential files
+*.md
+!README.md
+docs/
+examples/
+
+# CI/CD files
+.github/
+
+# Environment files
+.env
+.env.*
+
+# Test files (not needed in production)
+tests/
+
+# Workspace files
+*.code-workspace
+
+# Cargo cache (will be rebuilt in container)
+.cargo/

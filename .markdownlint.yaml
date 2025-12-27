@@ -1,0 +1,30 @@
+# Markdown Linting Configuration
+# Used by markdownlint pre-commit hook
+
+# Default state for all rules
+default: true
+
+# Disable some overly strict rules for learning documentation
+MD013: false  # Line length (we have long code blocks and links)
+MD022: false  # Headings should be surrounded by blank lines
+MD032: false  # Lists should be surrounded by blank lines
+MD033: false  # Allow inline HTML (useful for tables and formatting)
+MD034: false  # Allow bare URLs (sometimes we want them)
+MD036: false  # Emphasis used as heading (allow **Option A:** style)
+MD040: false  # Fenced code language (allow plain ``` blocks)
+MD041: false  # First line doesn't need to be top level heading
+MD059: false  # Allow non-descriptive link text
+MD060: false  # Table column spacing (allow compact tables)
+
+# Configure specific rules
+MD007:  # Unordered list indentation
+  indent: 2
+
+MD024:  # Multiple headings with same content
+  siblings_only: true  # Allow same heading in different sections
+
+MD025:  # Single H1 per document
+  front_matter_title: ""
+
+MD029:  # Ordered list item prefix
+  style: "ordered"

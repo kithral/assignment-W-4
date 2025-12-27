@@ -1,8 +1,51 @@
 {
-  // Use a separate target dir for RA to avoid locking files during builds
+  // Rust Analyzer Configuration
+  "rust-analyzer.check.command": "clippy",
+  "rust-analyzer.check.extraArgs": ["--all-targets"],
   "rust-analyzer.check.overrideCommand": [
     "cargo", "check", "--workspace", "--message-format=json", "--all-targets"
   ],
-  // Linker magic for Linux (see next section)
-  "rust-analyzer.cargo.buildScripts.enable": true
+  "rust-analyzer.cargo.features": "all",
+  "rust-analyzer.cargo.buildScripts.enable": true,
+  "rust-analyzer.inlayHints.enable": true,
+  "rust-analyzer.inlayHints.chainingHints.enable": true,
+  "rust-analyzer.inlayHints.parameterHints.enable": true,
+  "rust-analyzer.lens.enable": true,
+  "rust-analyzer.lens.references.adt.enable": true,
+  "rust-analyzer.lens.references.enumVariant.enable": true,
+  "rust-analyzer.lens.references.method.enable": true,
+  "rust-analyzer.lens.references.trait.enable": true,
+
+  // Enable format on save with rustfmt
+  "editor.formatOnSave": true,
+  "[rust]": {
+    "editor.defaultFormatter": "rust-lang.rust-analyzer",
+    "editor.formatOnSave": true
+  },
+
+  // File associations
+  "files.associations": {
+    "*.rs": "rust",
+    "*.toml": "toml"
+  },
+
+  // Show whitespace for learning proper indentation
+  "editor.renderWhitespace": "boundary",
+
+  // Ruler at 100 chars (matches rustfmt config)
+  "editor.rulers": [100],
+
+  // Terminal settings
+  "terminal.integrated.defaultProfile.linux": "bash",
+
+  // Exclude target directory from search
+  "search.exclude": {
+    "**/target": true,
+    "**/Cargo.lock": true
+  },
+
+  // File watcher exclusions for performance
+  "files.watcherExclude": {
+    "**/target/**": true
+  }
 }

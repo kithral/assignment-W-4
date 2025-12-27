@@ -1,0 +1,122 @@
+# Pre-commit Configuration
+# Enforces quality checks before commits to build good habits
+#
+# Installation:
+#   pip install pre-commit
+#   pre-commit install
+#
+# Usage:
+#   pre-commit run --all-files  # Run manually on all files
+#   pre-commit run              # Run on staged files (automatic on commit)
+#   git commit --no-verify      # Skip hooks (use sparingly!)
+
+repos:
+  # Rust-specific hooks
+  - repo: local
+    hooks:
+      # Check that code compiles
+      - id: cargo-check
+        name: Cargo Check
+        entry: cargo check --all-targets
+        language: system
+        files: \.rs$
+        pass_filenames: false
+        description: Ensures all Rust code compiles without errors
+
+      # Run cargo fmt to ensure consistent formatting
+      - id: cargo-fmt
+        name: Cargo Format Check
+        entry: cargo fmt --all -- --check
+        language: system
+        files: \.rs$
+        pass_filenames: false
+        description: Ensures code is formatted according to rustfmt.toml
+
+      # Run clippy for linting
+      - id: cargo-clippy
+        name: Cargo Clippy
+        entry: cargo clippy --all-targets -- -D warnings
+        language: system
+        files: \.rs$
+        pass_filenames: false
+        description: Runs Clippy linter with warnings as errors
+
+      # Run tests before committing
+      - id: cargo-test
+        name: Cargo Test
+        entry: cargo test --all
+        language: system
+        files: \.rs$
+        pass_filenames: false
+        stages: [pre-commit]
+        description: Runs all tests to ensure nothing is broken
+
+  # General file checks
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v6.0.0
+    hooks:
+      # Prevent committing large files
+      - id: check-added-large-files
+        args: ['--maxkb=1000']
+        description: Prevents accidentally committing large files
+
+      # Check for files that would conflict on case-insensitive filesystems
+      - id: check-case-conflict
+        description: Checks for files that would conflict on case-insensitive systems
+
+      # Ensure files end with a newline
+      - id: end-of-file-fixer
+        exclude: \.lock$
+        description: Ensures all files end with a newline
+
+      # Check for merge conflict markers
+      - id: check-merge-conflict
+        description: Checks for merge conflict markers
+
+      # Check YAML files are valid
+      - id: check-yaml
+        files: \.(yaml|yml)$
+        description: Validates YAML syntax
+
+      # Check TOML files are valid
+      - id: check-toml
+        description: Validates TOML syntax (Cargo.toml, etc.)
+
+      # Trim trailing whitespace
+      - id: trailing-whitespace
+        args: [--markdown-linebreak-ext=md]
+        description: Removes trailing whitespace
+
+      # Check for accidentally committed private keys
+      - id: detect-private-key
+        description: Detects private keys that shouldn't be committed
+
+      # Prevent committing to main branch directly (optional)
+      # Uncomment if you want to enforce feature branch workflow
+      # - id: no-commit-to-branch
+      #   args: ['--branch', 'main', '--branch', 'master']
+      #   description: Prevents direct commits to main/master branches
+
+  # Markdown linting
+  - repo: https://github.com/igorshubovych/markdownlint-cli
+    rev: v0.47.0
+    hooks:
+      - id: markdownlint
+        args: ['--fix']
+        description: Lints and fixes Markdown files
+
+  # Check for TODO/FIXME comments (informational)
+  - repo: local
+    hooks:
+      - id: check-todos
+        name: Check for TODOs
+        entry: sh -c 'if git diff --cached --name-only | xargs grep -n "TODO\|FIXME\|XXX" 2>/dev/null; then echo "⚠️  Found TODO/FIXME comments - consider addressing them"; fi; exit 0'
+        language: system
+        stages: [pre-commit]
+        pass_filenames: false
+        verbose: true
+        description: Warns about TODO/FIXME comments (doesn't block commit)
+
+# Configuration options
+fail_fast: false  # Run all hooks even if one fails (see all issues at once)
+default_stages: [pre-commit]  # Run on commit by default
