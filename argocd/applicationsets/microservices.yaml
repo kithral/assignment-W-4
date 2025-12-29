@@ -27,6 +27,8 @@ spec:
         replicas: 1
       - service: text-gateway
         replicas: 1
+      - service: web-portal
+        replicas: 2
   template:
     metadata:
       name: '{{.service}}'

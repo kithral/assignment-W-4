@@ -67,13 +67,16 @@ assignment-W-4/
 │   ├── chat-service/       📋 Chat and messaging (template)
 │   ├── persistence-service/📋 Database operations (template)
 │   └── asset-service/      📋 Asset delivery (template)
+├── web-portal/             ✅ SvelteKit web portal (implemented)
+│   ├── src/               # Frontend application
+│   └── Dockerfile         # Production build
 ├── shared/                 # Shared code across services
 │   ├── src/               # Common modules
 │   └── examples/          # Learning examples
 ├── client/                # Graphical client (Bevy)
 ├── server/                # Legacy monolith (being deprecated)
 ├── docker-compose.dev.yml # Local development
-└── docs/                  # 4,500+ lines of documentation
+└── docs/                  # 5,000+ lines of documentation
 ```
 
 **Quick Start:** See [docs/MICROSERVICES_QUICKSTART.md](docs/MICROSERVICES_QUICKSTART.md)
@@ -184,6 +187,7 @@ just client  # Terminal 2
 - **[docs/ARGOCD_SETUP.md](docs/ARGOCD_SETUP.md)** - ArgoCD installation guide
 - **[docs/DEPLOYMENT_WORKFLOW.md](docs/DEPLOYMENT_WORKFLOW.md)** - Daily deployment operations
 - **[docs/ORANGEPI_SETUP_CHECKLIST.md](docs/ORANGEPI_SETUP_CHECKLIST.md)** - Orange Pi setup checklist
+- **[docs/WEB_PORTAL.md](docs/WEB_PORTAL.md)** - SvelteKit web portal guide
 
 ### Database & Versioning
 
