@@ -2,7 +2,6 @@
 resolver = "2"
 members = [
     "client",
-    "server",  # Legacy monolith - will be deprecated
     "shared",
     # Microservices
     "services/graphics-gateway",
@@ -19,7 +18,7 @@ members = [
 [workspace.dependencies]
 # Define versions once here
 bevy = { version = "0.15", features = ["wayland"] } # Arch needs wayland support
-lightyear = "0.18" # Check for latest version
+lightyear = "0.18"                                  # Check for latest version
 
 # Recommended by Gemini for future use - uncomment when needed:
 # serde = { version = "1.0", features = ["derive"] }  # For custom serialization beyond bincode
