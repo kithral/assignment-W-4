@@ -105,6 +105,14 @@ repos:
         args: ['--fix']
         description: Lints and fixes Markdown files
 
+  # Conventional Commits validation
+  - repo: https://github.com/compilerla/conventional-pre-commit
+    rev: v3.6.0
+    hooks:
+      - id: conventional-pre-commit
+        stages: [commit-msg]
+        description: Validates commit messages follow Conventional Commits format
+
   # Check for TODO/FIXME comments (informational)
   - repo: local
     hooks:

@@ -15,6 +15,13 @@ members = [
     "services/asset-service",
 ]
 
+[workspace.package]
+version = "0.1.0"
+edition = "2021"
+authors = ["Assignment W-4 Contributors"]
+license = "MIT OR Apache-2.0"
+repository = "https://github.com/CHANGEME/assignment-W-4"
+
 [workspace.dependencies]
 # Define versions once here
 bevy = { version = "0.15", features = ["wayland"] } # Arch needs wayland support

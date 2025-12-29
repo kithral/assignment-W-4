@@ -1,0 +1,33 @@
+# cargo-release configuration
+# https://github.com/crate-ci/cargo-release
+
+# Don't publish to crates.io (this is a binary project)
+publish = false
+
+# Don't push to git automatically (we'll do this in CI)
+push = false
+
+# Create a git tag for releases
+tag = true
+tag-name = "v{{version}}"
+
+# Pre-release replacements
+pre-release-replacements = [
+  # Update version in Cargo.lock
+  {file = "Cargo.lock", search = "version = \".*\"", replace = "version = \"{{version}}\"", exactly = 1},
+
+  # Update CHANGELOG.md header
+  {file = "CHANGELOG.md", search = "## \\[Unreleased\\]", replace = "## [Unreleased]\n\n## [{{version}}] - {{date}}", exactly = 1},
+]
+
+# Don't require dependencies to be published
+allow-branch = ["main", "develop"]
+
+# Consolidate commits
+consolidate-commits = false
+
+# Sign tags
+sign-tag = false
+
+# Shared release for workspace
+shared-version = true

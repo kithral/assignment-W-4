@@ -7,6 +7,44 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added - GitOps & Database Infrastructure (2025-12-29)
+
+- **ArgoCD GitOps deployment infrastructure**
+  - Kubernetes manifests with Kustomize for all 9 microservices
+  - Multi-stage Dockerfile for efficient service builds
+  - GitHub Actions workflow for selective CI/CD builds
+  - Complete deployment automation documentation
+- **Database migration strategy using SQLx**
+  - Compile-time verified SQL queries
+  - Built-in migration system
+  - Type-safe query examples and patterns
+- **Semantic versioning with Conventional Commits**
+  - Automated version management
+  - Pre-commit hooks for commit message validation
+  - cargo-release configuration for workspace versioning
+- **Comprehensive documentation** (900+ new lines)
+  - DATABASE_STRATEGY.md - PostgreSQL + SQLx approach
+  - VERSIONING_STRATEGY.md - SemVer 2.0 + Conventional Commits
+  - DATABASE_AND_VERSIONING_SETUP.md - Quick setup guide
+  - ARGOCD_SETUP.md, DEPLOYMENT_WORKFLOW.md, ORANGEPI_SETUP_CHECKLIST.md
+
+### Changed - GitOps & Database Infrastructure (2025-12-29)
+
+- Removed legacy server monolith placeholder (empty "Hello World")
+- Updated workspace to use shared version configuration
+- Enhanced .dockerignore for deployment files
+- Added Conventional Commits validation to pre-commit hooks
+- Updated README with Database & Versioning section
+
+### Infrastructure - GitOps & Database (2025-12-29)
+
+- PostgreSQL for persistent data with SQLx migrations
+- Redis for caching and pub/sub
+- RabbitMQ for async message processing
+- ArgoCD for GitOps deployments
+- GitHub Container Registry for Docker images
+- Monorepo with selective builds (only changed services rebuild)
+
 ### Added - Documentation Capstone (2025-12-26)
 
 - **PROJECT_STATUS.md** - Comprehensive 480-line status report

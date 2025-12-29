@@ -1,0 +1,129 @@
+name: Release
+
+# Manually triggered release workflow
+# Automatically bumps version based on Conventional Commits
+
+on:
+  workflow_dispatch:
+    inputs:
+      version_bump:
+        description: 'Version bump type (leave auto to determine from commits)'
+        required: false
+        type: choice
+        default: 'auto'
+        options:
+          - auto
+          - patch
+          - minor
+          - major
+      dry_run:
+        description: 'Dry run (do not actually release)'
+        required: false
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Install cargo-release
+        run: cargo install cargo-release --locked
+
+      - name: Configure Git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Determine version bump
+        id: version_bump
+        run: |
+          BUMP_TYPE="${{ github.event.inputs.version_bump }}"
+
+          # If auto, analyze commits to determine bump type
+          if [ "$BUMP_TYPE" = "auto" ]; then
+            # Get commits since last tag
+            LAST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
+
+            if [ -z "$LAST_TAG" ]; then
+              # No tags yet, default to patch
+              BUMP_TYPE="patch"
+            else
+              # Check for breaking changes
+              if git log $LAST_TAG..HEAD --grep="BREAKING CHANGE:" --grep="!" --extended-regexp; then
+                BUMP_TYPE="major"
+              # Check for features
+              elif git log $LAST_TAG..HEAD --grep="^feat" --extended-regexp; then
+                BUMP_TYPE="minor"
+              # Otherwise patch
+              else
+                BUMP_TYPE="patch"
+              fi
+            fi
+          fi
+
+          echo "bump_type=$BUMP_TYPE" >> $GITHUB_OUTPUT
+          echo "Determined version bump: $BUMP_TYPE"
+
+      - name: Bump version
+        if: ${{ !github.event.inputs.dry_run }}
+        run: |
+          BUMP_TYPE="${{ steps.version_bump.outputs.bump_type }}"
+
+          # Run cargo release
+          cargo release $BUMP_TYPE --execute --no-confirm --no-publish --allow-branch main
+
+      - name: Dry run
+        if: ${{ github.event.inputs.dry_run }}
+        run: |
+          BUMP_TYPE="${{ steps.version_bump.outputs.bump_type }}"
+          echo "DRY RUN: Would bump $BUMP_TYPE version"
+          cargo release $BUMP_TYPE --no-publish --allow-branch main
+
+      - name: Get new version
+        if: ${{ !github.event.inputs.dry_run }}
+        id: get_version
+        run: |
+          VERSION=$(cargo metadata --no-deps --format-version 1 | jq -r '.packages[0].version')
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "New version: $VERSION"
+
+      - name: Generate release notes
+        if: ${{ !github.event.inputs.dry_run }}
+        id: release_notes
+        run: |
+          VERSION="${{ steps.get_version.outputs.version }}"
+
+          # Extract changelog for this version
+          sed -n "/## \[Unreleased\]/,/## \[$VERSION\]/p" CHANGELOG.md | \
+            sed '1d;$d' > release_notes.md
+
+          # Fallback if no changelog entry
+          if [ ! -s release_notes.md ]; then
+            echo "## What's Changed" > release_notes.md
+            echo "" >> release_notes.md
+            git log $(git describe --tags --abbrev=0 HEAD^)..HEAD --pretty=format:"- %s" >> release_notes.md
+          fi
+
+      - name: Create GitHub Release
+        if: ${{ !github.event.inputs.dry_run }}
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: "v${{ steps.get_version.outputs.version }}"
+          name: "Release v${{ steps.get_version.outputs.version }}"
+          body_path: release_notes.md
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

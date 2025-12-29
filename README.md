@@ -185,6 +185,12 @@ just client  # Terminal 2
 - **[docs/DEPLOYMENT_WORKFLOW.md](docs/DEPLOYMENT_WORKFLOW.md)** - Daily deployment operations
 - **[docs/ORANGEPI_SETUP_CHECKLIST.md](docs/ORANGEPI_SETUP_CHECKLIST.md)** - Orange Pi setup checklist
 
+### Database & Versioning
+
+- **[docs/DATABASE_STRATEGY.md](docs/DATABASE_STRATEGY.md)** - PostgreSQL + SQLx migration strategy
+- **[docs/VERSIONING_STRATEGY.md](docs/VERSIONING_STRATEGY.md)** - SemVer 2.0 + Conventional Commits
+- **[docs/DATABASE_AND_VERSIONING_SETUP.md](docs/DATABASE_AND_VERSIONING_SETUP.md)** - Quick setup guide
+
 ### Development Guides
 
 - **[docs/rust-learnings.md](docs/rust-learnings.md)** - Rust concepts tracker
