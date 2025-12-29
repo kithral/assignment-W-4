@@ -39,3 +39,17 @@ tests/
 
 # Cargo cache (will be rebuilt in container)
 .cargo/
+
+# Claude AI files
+.claude/
+
+# ArgoCD and deployment configs (not needed in container)
+argocd/
+deployments/
+
+# Docker compose files
+docker-compose*.yml
+
+# Additional Docker files (keep only what's needed)
+Dockerfile*
+!Dockerfile.service

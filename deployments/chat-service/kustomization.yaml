@@ -1,0 +1,24 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: default
+
+namePrefix: chat-
+
+commonLabels:
+  app: chat-service
+  service: chat-service
+
+resources:
+- ../base
+
+images:
+- name: service
+  newName: ghcr.io/CHANGEME/chat-service
+  newTag: latest
+
+configMapGenerator:
+- name: service-config
+  behavior: merge
+  literals:
+  - SERVICE_NAME=chat-service

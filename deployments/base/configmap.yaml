@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: service-config
+data:
+  # Default configuration - override in service-specific kustomization
+  environment: "production"

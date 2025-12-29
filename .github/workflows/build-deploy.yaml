@@ -1,0 +1,160 @@
+name: Build and Deploy Services
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+  pull_request:
+    branches:
+      - main
+
+env:
+  REGISTRY: ghcr.io
+  # Change this to your GitHub username/org
+  IMAGE_PREFIX: ghcr.io/${{ github.repository_owner }}
+
+jobs:
+  # Detect which services have changed
+  detect-changes:
+    runs-on: ubuntu-latest
+    outputs:
+      services: ${{ steps.filter.outputs.changes }}
+      shared_changed: ${{ steps.filter.outputs.shared }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Check for file changes
+        uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            shared:
+              - 'shared/**'
+              - 'Cargo.toml'
+              - 'Cargo.lock'
+            auth-service:
+              - 'services/auth-service/**'
+              - 'shared/**'
+              - 'Cargo.toml'
+            chat-service:
+              - 'services/chat-service/**'
+              - 'shared/**'
+              - 'Cargo.toml'
+            world-state:
+              - 'services/world-state/**'
+              - 'shared/**'
+              - 'Cargo.toml'
+            physics-service:
+              - 'services/physics-service/**'
+              - 'shared/**'
+              - 'Cargo.toml'
+            script-executor:
+              - 'services/script-executor/**'
+              - 'shared/**'
+              - 'Cargo.toml'
+            asset-service:
+              - 'services/asset-service/**'
+              - 'shared/**'
+              - 'Cargo.toml'
+            persistence-service:
+              - 'services/persistence-service/**'
+              - 'shared/**'
+              - 'Cargo.toml'
+            graphics-gateway:
+              - 'services/graphics-gateway/**'
+              - 'shared/**'
+              - 'Cargo.toml'
+            text-gateway:
+              - 'services/text-gateway/**'
+              - 'shared/**'
+              - 'Cargo.toml'
+            client:
+              - 'client/**'
+              - 'shared/**'
+              - 'Cargo.toml'
+
+  # Build and push Docker images for changed services
+  build-and-push:
+    needs: detect-changes
+    if: ${{ needs.detect-changes.outputs.services != '[]' && needs.detect-changes.outputs.services != '' }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    strategy:
+      matrix:
+        service: ${{ fromJSON(needs.detect-changes.outputs.services) }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.IMAGE_PREFIX }}/${{ matrix.service }}
+          tags: |
+            type=ref,event=branch
+            type=ref,event=pr
+            type=sha,prefix={{branch}}-
+            type=raw,value=latest,enable={{is_default_branch}}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./Dockerfile.service
+          build-args: |
+            SERVICE_NAME=${{ matrix.service }}
+          push: ${{ github.event_name != 'pull_request' }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  # Update Kustomize manifests with new image tags (only on main branch)
+  update-manifests:
+    needs: [detect-changes, build-and-push]
+    if: github.ref == 'refs/heads/main' && needs.detect-changes.outputs.services != '[]'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    strategy:
+      matrix:
+        service: ${{ fromJSON(needs.detect-changes.outputs.services) }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up Kustomize
+        run: |
+          curl -s "https://raw.githubusercontent.com/kubernetes-sigs/kustomize/master/hack/install_kustomize.sh" | bash
+          sudo mv kustomize /usr/local/bin/
+
+      - name: Update image tag in Kustomization
+        run: |
+          cd deployments/${{ matrix.service }}
+          kustomize edit set image service=${{ env.IMAGE_PREFIX }}/${{ matrix.service }}:main-${{ github.sha }}
+
+      - name: Commit and push changes
+        run: |
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+          git add deployments/${{ matrix.service }}/kustomization.yaml
+          git commit -m "chore: update ${{ matrix.service }} image to main-${{ github.sha }}" || exit 0
+          git pull --rebase
+          git push

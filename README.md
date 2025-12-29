@@ -178,6 +178,13 @@ just client  # Terminal 2
 - **[docs/architecture.md](docs/architecture.md)** - System architecture overview
 - **[docs/scripting-research.md](docs/scripting-research.md)** - Scripting language evaluation
 
+### GitOps & Deployment
+
+- **[docs/ARGOCD_SUMMARY.md](docs/ARGOCD_SUMMARY.md)** - ArgoCD + GitOps overview
+- **[docs/ARGOCD_SETUP.md](docs/ARGOCD_SETUP.md)** - ArgoCD installation guide
+- **[docs/DEPLOYMENT_WORKFLOW.md](docs/DEPLOYMENT_WORKFLOW.md)** - Daily deployment operations
+- **[docs/ORANGEPI_SETUP_CHECKLIST.md](docs/ORANGEPI_SETUP_CHECKLIST.md)** - Orange Pi setup checklist
+
 ### Development Guides
 
 - **[docs/rust-learnings.md](docs/rust-learnings.md)** - Rust concepts tracker
@@ -199,14 +206,22 @@ Run `just` to see all available commands.
 
 ## ⚙️ Deployment Pipeline
 
-This project utilizes a self-hosted CI/CD pipeline:
+This project uses **GitOps** with ArgoCD for automated deployments:
 
-1. Code pushed to main
-2. GitHub Actions triggers runner on local network (Orange Pi)
-3. Runner compiles Rust binary and builds Docker image
-4. Image deployed to local K3s cluster
+1. **Developer pushes code** to main branch
+2. **GitHub Actions** detects changes (path-based filtering)
+3. **Only affected services** are built and pushed to ghcr.io
+4. **Kustomize manifests** updated with new image tags
+5. **ArgoCD** automatically syncs changes to Kubernetes
+6. **Services deployed** to local K3s cluster on Orange Pi
 
-Pre-commit hooks ensure code quality before it reaches CI/CD.
+**Key Features:**
+- ✅ Only changed services rebuild (monorepo optimization)
+- ✅ GitOps - Git as single source of truth
+- ✅ Auto-sync with rollback capabilities
+- ✅ Self-hosted on ARM64 infrastructure
+
+See [docs/ARGOCD_SUMMARY.md](docs/ARGOCD_SUMMARY.md) for complete GitOps setup.
 
 ## 🎓 Learning Resources
 

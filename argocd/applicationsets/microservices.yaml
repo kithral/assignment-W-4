@@ -1,0 +1,56 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: microservices
+  namespace: argocd
+spec:
+  goTemplate: true
+  goTemplateOptions: ["missingkey=error"]
+  generators:
+  - list:
+      elements:
+      - service: auth-service
+        replicas: 1
+      - service: chat-service
+        replicas: 1
+      - service: world-state
+        replicas: 2
+      - service: physics-service
+        replicas: 1
+      - service: script-executor
+        replicas: 1
+      - service: asset-service
+        replicas: 1
+      - service: persistence-service
+        replicas: 1
+      - service: graphics-gateway
+        replicas: 1
+      - service: text-gateway
+        replicas: 1
+  template:
+    metadata:
+      name: '{{.service}}'
+      labels:
+        app: '{{.service}}'
+    spec:
+      project: default
+      source:
+        repoURL: https://github.com/CHANGEME/assignment-W-4.git
+        targetRevision: main
+        path: 'deployments/{{.service}}'
+      destination:
+        server: https://kubernetes.default.svc
+        namespace: default
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true
+          allowEmpty: false
+        syncOptions:
+        - CreateNamespace=true
+        retry:
+          limit: 5
+          backoff:
+            duration: 5s
+            factor: 2
+            maxDuration: 3m

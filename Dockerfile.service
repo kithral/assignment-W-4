@@ -1,0 +1,73 @@
+# Multi-stage Dockerfile for building any microservice in the workspace
+# Usage: docker build --build-arg SERVICE_NAME=auth-service -f Dockerfile.service -t auth-service:latest .
+
+ARG RUST_VERSION=1.83
+ARG DEBIAN_VERSION=bookworm
+
+# Stage 1: Build dependencies (cached layer)
+FROM rust:${RUST_VERSION}-${DEBIAN_VERSION} AS chef
+WORKDIR /build
+RUN cargo install cargo-chef
+
+# Stage 2: Prepare recipe for dependency caching
+FROM chef AS planner
+COPY Cargo.toml Cargo.lock ./
+COPY shared ./shared
+COPY services ./services
+RUN cargo chef prepare --recipe-path recipe.json
+
+# Stage 3: Build dependencies (this layer is cached unless dependencies change)
+FROM chef AS dependencies
+COPY --from=planner /build/recipe.json recipe.json
+RUN cargo chef cook --release --recipe-path recipe.json
+
+# Stage 4: Build the service
+FROM rust:${RUST_VERSION}-${DEBIAN_VERSION} AS builder
+WORKDIR /build
+
+# Copy the workspace
+COPY Cargo.toml Cargo.lock ./
+COPY shared ./shared
+COPY services ./services
+
+# Copy built dependencies from cache
+COPY --from=dependencies /build/target target
+COPY --from=dependencies /usr/local/cargo /usr/local/cargo
+
+# Build only the specific service
+ARG SERVICE_NAME
+RUN if [ -z "$SERVICE_NAME" ]; then echo "SERVICE_NAME build arg is required" && exit 1; fi
+RUN cargo build --release -p ${SERVICE_NAME}
+
+# Stage 5: Runtime image
+FROM debian:${DEBIAN_VERSION}-slim AS runtime
+
+# Install runtime dependencies
+RUN apt-get update && apt-get install -y \
+    ca-certificates \
+    libssl3 \
+    && rm -rf /var/lib/apt/lists/*
+
+# Create non-root user
+RUN useradd -m -u 1000 appuser
+
+WORKDIR /app
+
+# Copy the built binary
+ARG SERVICE_NAME
+COPY --from=builder /build/target/release/${SERVICE_NAME} /app/service
+
+# Set ownership
+RUN chown -R appuser:appuser /app
+
+USER appuser
+
+# Expose ports (HTTP and gRPC)
+EXPOSE 8080 50051
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
+  CMD curl -f http://localhost:8080/health || exit 1
+
+# Run the service
+CMD ["/app/service"]
